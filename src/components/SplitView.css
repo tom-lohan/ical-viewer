@@ -1,0 +1,36 @@
+.split-view {
+  display: flex;
+  gap: 16px;
+  height: calc(100vh - 60px);
+  box-sizing: border-box;
+  width: 95vw;
+}
+
+.pane {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+}
+
+.left-editor {
+  /* Give both panes an equal base of 50% and allow them to grow/shrink equally */
+  flex: 1 1 50%;
+  min-width: 0; /* allow overflow clipping */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* contain the textarea */
+}
+
+.right-output {
+  flex: 1 1 50%;
+  min-width: 0;
+  overflow: auto;
+}
+
+/* make the TextArea fill the pane */
+.left-editor .ant-input-textarea,
+.left-editor textarea {
+  height: 100% !important;
+  box-sizing: border-box;
+}
