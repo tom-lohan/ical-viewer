@@ -81,7 +81,9 @@ export default function RightOutput({ result }: Props) {
                 <Timeline.Item color={classify(ev)} key={ev.uid || idx}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
                     <div style={{ textAlign: "left" }}>
-                      <Text strong>{fmtDate(ev.start ?? "-")}</Text>
+                      <Tag color={"black"} style={{ fontWeight: "bold" }}>
+                        {fmtDate(ev.start ?? "-")}
+                      </Tag>
                       <div>
                         <Text type="secondary">UID: {ev.uid || "—"}</Text>
                       </div>
