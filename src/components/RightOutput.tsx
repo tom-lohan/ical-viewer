@@ -37,6 +37,32 @@ export default function RightOutput({ result }: Props) {
   const events = "events" in result ? result.events : [];
   const error = "error" in result ? result.error : undefined;
 
+  // compute day difference between consecutive events (based on start)
+  const eventsSortedByStart = [...events].sort((a, b) => {
+    const da = a.start ? new Date(a.start).getTime() : 0;
+    const db = b.start ? new Date(b.start).getTime() : 0;
+    return da - db;
+  });
+
+  const dayDiffs = new Map<string | undefined, number>();
+  for (let i = 0; i < eventsSortedByStart.length; i++) {
+    if (i === 0) {
+      dayDiffs.set(eventsSortedByStart[i].uid, 0);
+      continue;
+    }
+    const prev = eventsSortedByStart[i - 1];
+    const cur = eventsSortedByStart[i];
+    if (!cur.start) {
+      dayDiffs.set(cur.uid, 0);
+      continue;
+    }
+    const prevTime = prev.start ? new Date(prev.start).getTime() : 0;
+    const curTime = new Date(cur.start).getTime();
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const diffDays = Math.round((curTime - prevTime) / msPerDay);
+    dayDiffs.set(cur.uid, diffDays);
+  }
+
   // Map distinct created strings to a color from the palette
   const palette = ["purple", "orange", "cyan", "magenta", "volcano", "gold", "geekblue"] as const;
 
@@ -81,9 +107,12 @@ export default function RightOutput({ result }: Props) {
                 <Timeline.Item color={classify(ev)} key={ev.uid || idx}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
                     <div style={{ textAlign: "left" }}>
-                      <Tag color={"black"} style={{ fontWeight: "bold" }}>
-                        {fmtDate(ev.start ?? "-")}
-                      </Tag>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <Tag color={"black"} style={{ fontWeight: "bold" }}>
+                          {fmtDate(ev.start ?? "-")}
+                        </Tag>
+                        <Text type="secondary">Δ {dayDiffs.get(ev.uid) ?? 0}d</Text>
+                      </div>
                       <div>
                         <Text type="secondary">UID: {ev.uid || "—"}</Text>
                       </div>
